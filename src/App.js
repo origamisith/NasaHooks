@@ -15,12 +15,15 @@ function App() {
             '&api_key=' + NASA_KEY).then(response => response.json())
     })
 
+    //Was going to use this way, but found a cooler way
     // useInterval(() => {
     //     if(playing && isSuccess && !isLoading && !isFetching && imgLoaded) {
     //         setImgLoaded(false);
     //         setIndex((index + 1) % data.photos.length)
     //     }
     // }, 100);
+
+    //The cooler way
     useEffect(() => {
         const timer = window.setInterval(() => {
             if(playing && imgLoaded) {
@@ -56,6 +59,7 @@ function App() {
     );
 }
 
+//Was going to use this, but used a cooler way
 //***** Stolen shamelessly from https://overreacted.io/making-setinterval-declarative-with-react-hooks/
 // function useInterval(callback, delay) {
 //     const savedCallback = useRef();
