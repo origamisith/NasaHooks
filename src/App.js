@@ -1,9 +1,24 @@
 import './App.css';
 import {useEffect, useRef, useState} from "react";
 import {useQuery, useQueryClient} from "react-query";
-import dotenv from "dotenv";
+import {
+    PrimaryButton,
+    Heading,
+    HEADING_LEVELS,
+    HEADING_TYPES,
+    Content,
+    IconArrowForward,
+    IconButton,
+    IconArrowBack, Button, centerContent
+} from "cdk-radial";
+import styled from "styled-components";
 
 const NASA_KEY=''; //See https://api.nasa.gov/
+
+const LeftButton = styled(Button)`float: left; margin: 5px`
+const LargerContent = styled(Content)`font-size: 50px; display: inline`;
+const MyIconButton = styled(IconButton)`margin-top: 0px; margin-outside: 200px; border-color: #000000; border-width: 4px`;
+
 function App() {
     const [index, setIndex] = useState(0);
     const [day, setDay] = useState(22);
@@ -15,20 +30,11 @@ function App() {
             '&api_key=' + NASA_KEY).then(response => response.json())
     })
 
-    //Was going to use this way, but found a cooler way
-    // useInterval(() => {
-    //     if(playing && isSuccess && !isLoading && !isFetching && imgLoaded) {
-    //         setImgLoaded(false);
-    //         setIndex((index + 1) % data.photos.length)
-    //     }
-    // }, 100);
-
-    //The cooler way
     useEffect(() => {
         const timer = window.setInterval(() => {
             if(playing && imgLoaded) {
                 setImgLoaded(false);
-                setIndex((index + 1) % data.photos.length)
+                setIndex((index + 1) % data?.photos?.length)
             }
         }, 100)
         return () => {
@@ -36,50 +42,28 @@ function App() {
         }
     })
 
-
     return (
-        <div className="App">
-            <button onClick={() => setPlaying(!playing)}>Play/Pause</button>
-            <button onClick ={() => setIndex((index-1 + data.photos.length)%data.photos.length)}>Previous</button>
-            <button onClick ={() => setIndex((index+1)%data.photos.length)}>Next</button>
-            <button onClick ={() => {
-                setDay ((day-1 + 30)%30)
+        <div className="App" style={{width: "100%"}}>
+            <LeftButton onClick ={() => {
+                setDay ((day-1 + 31)%31)
                 setIndex(0);
-            }}>Previous Day</button>
-            <button onClick ={() =>  {
-                setDay((day+1)%30)
+            }} text="Previous Day"/>
+            <div><Content style={{float: 'left', display: 'inline', lineHeight: '45px'}}>06/{day}/21</Content></div>
+            <LeftButton onClick ={() =>  {
+                setDay((day+1)%31)
                 setIndex(0);
-            }}>Next Day</button>
-            <h2>{index}</h2>
-            <h1>{(loading || isLoading ) && "Loading..."}</h1>
-            {(isSuccess) && <img src={data?.photos[index]?.img_src} alt="Error" onLoad={() => setImgLoaded(true)}/>}
-            {/*{(isSuccess) && <img src={data.photos[index]?.img_src} alt="Error" />}*/}
+            }} text="Next Day"/>
+            <div align={centerContent}>
+                <PrimaryButton style={{center: '-10px'}} onClick={() => setPlaying(!playing)} text="Play/Pause"/>
+                <MyIconButton onClick ={() => setIndex(((index-1 + data?.photos?.length) ?? 0)%((data?.photos?.length) ?? 1))} icon={<IconArrowBack/>} text="Previous"/>
+                <LargerContent type="body-2">{index ?? 0}</LargerContent>
+                /{data?.photos?.length ?? 0}
+                <MyIconButton onClick ={() => setIndex((index+1)%data?.photos?.length)} icon={<IconArrowForward/>} text="Next"/>
+            </div>
+            <Heading headingType="display-1" level={1}>{(loading || isLoading ) && "Loading..."}</Heading>
+            {(isSuccess && !isLoading) && <img src={data?.photos[index]?.img_src} alt="Error" onLoad={() => setImgLoaded(true)}/>}
             {isError && "" + error}
         </div>
     );
 }
-
-//Was going to use this, but used a cooler way
-//***** Stolen shamelessly from https://overreacted.io/making-setinterval-declarative-with-react-hooks/
-// function useInterval(callback, delay) {
-//     const savedCallback = useRef();
-//
-//     // Remember the latest callback.
-//     useEffect(() => {
-//         savedCallback.current = callback;
-//     }, [callback]);
-//
-//     // Set up the interval.
-//     useEffect(() => {
-//         function tick() {
-//             savedCallback.current();
-//         }
-//         if (delay !== null) {
-//             let id = setInterval(tick, delay);
-//             return () => clearInterval(id);
-//         }
-//     }, [delay]);
-// }
-//***** End of plagiarism
-
 export default App;
