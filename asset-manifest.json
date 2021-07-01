@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/NasaHooks/static/css/main.9d5b29c0.chunk.css",
+    "main.js": "/NasaHooks/static/js/main.b6809468.chunk.js",
+    "main.js.map": "/NasaHooks/static/js/main.b6809468.chunk.js.map",
+    "runtime-main.js": "/NasaHooks/static/js/runtime-main.e3316dad.js",
+    "runtime-main.js.map": "/NasaHooks/static/js/runtime-main.e3316dad.js.map",
+    "static/js/2.6e76806d.chunk.js": "/NasaHooks/static/js/2.6e76806d.chunk.js",
+    "static/js/2.6e76806d.chunk.js.map": "/NasaHooks/static/js/2.6e76806d.chunk.js.map",
+    "index.html": "/NasaHooks/index.html",
+    "static/css/main.9d5b29c0.chunk.css.map": "/NasaHooks/static/css/main.9d5b29c0.chunk.css.map",
+    "static/js/2.6e76806d.chunk.js.LICENSE.txt": "/NasaHooks/static/js/2.6e76806d.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.e3316dad.js",
+    "static/js/2.6e76806d.chunk.js",
+    "static/css/main.9d5b29c0.chunk.css",
+    "static/js/main.b6809468.chunk.js"
+  ]
+}
