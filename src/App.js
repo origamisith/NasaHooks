@@ -9,60 +9,81 @@ import {
     Content,
     IconArrowForward,
     IconButton,
-    IconArrowBack, Button, centerContent
+    IconArrowBack, Button, centerContent, IconPageFirst, IconPageLast, BUTTON_SIZES
 } from "cdk-radial";
 import styled from "styled-components";
 
-const NASA_KEY=''; //See https://api.nasa.gov/
+const NASA=''; //See https://api.nasa.gov/
 
-const LeftButton = styled(Button)`float: left; margin: 5px`
-const LargerContent = styled(Content)`font-size: 50px; display: inline`;
-const MyIconButton = styled(IconButton)`margin-top: 0px; margin-outside: 200px; border-color: #000000; border-width: 4px`;
+const LargerContent = styled(Content)`
+  font-size: 50px;
+`;
+const MyIconButton = styled(IconButton)`
+  width: 3.5em;
+  height: 3.5em;
+`;
+const Date = styled(Content)`
+  margin: auto 10px;
+  font-size: 1em
+`;
+
 
 function App() {
+    const [count, setCount] = useState(0);
     const [index, setIndex] = useState(0);
-    const [day, setDay] = useState(22);
+    const [day, setDay] = useState(23);
     const [playing, setPlaying] = useState(false);
     const [imgLoaded, setImgLoaded] = useState(false);
-    const {loading, data, isLoading, isSuccess, isError, error,isFetching } = useQuery(['rover', day], () => {
+    const {loading, data, isLoading, isSuccess, isError, error, isFetching} = useQuery(['rover', day], () => {
         return fetch('https://api.nasa.gov/mars-photos/api/v1/rovers/perseverance/photos' +
-            '?earth_date=2021-06-'+day+
-            '&api_key=' + NASA_KEY).then(response => response.json())
-    })
+            '?earth_date=2021-06-' + (day+1) +
+            '&api_key=' + NASA).then(response => response.json())
+    });
 
     useEffect(() => {
         const timer = window.setInterval(() => {
-            if(playing && imgLoaded) {
+            if(count%50===0 && playing && imgLoaded) {
                 setImgLoaded(false);
                 setIndex((index + 1) % data?.photos?.length)
             }
-        }, 100)
+            setCount(count+1);
+        }, 1)
         return () => {
             window.clearInterval(timer);
         }
     })
 
+    const changeDay = (increment) => {
+        setDay ((day + increment+ 30)%30)
+        setIndex(0);
+        setPlaying(false);
+    }
+
+    const selectPhoto = (increment) => {
+        setIndex(((index + increment + data?.photos?.length) ?? 0)%((data?.photos?.length) ?? 1))
+    }
     return (
-        <div className="App" style={{width: "100%"}}>
-            <LeftButton onClick ={() => {
-                setDay ((day-1 + 31)%31)
-                setIndex(0);
-            }} text="Previous Day"/>
-            <div><Content style={{float: 'left', display: 'inline', lineHeight: '45px'}}>06/{day}/21</Content></div>
-            <LeftButton onClick ={() =>  {
-                setDay((day+1)%31)
-                setIndex(0);
-            }} text="Next Day"/>
-            <div align={centerContent}>
-                <PrimaryButton style={{center: '-10px'}} onClick={() => setPlaying(!playing)} text="Play/Pause"/>
-                <MyIconButton onClick ={() => setIndex(((index-1 + data?.photos?.length) ?? 0)%((data?.photos?.length) ?? 1))} icon={<IconArrowBack/>} text="Previous"/>
-                <LargerContent type="body-2">{index ?? 0}</LargerContent>
-                /{data?.photos?.length ?? 0}
-                <MyIconButton onClick ={() => setIndex((index+1)%data?.photos?.length)} icon={<IconArrowForward/>} text="Next"/>
+        <div id="App" >
+        <div id="Day-Controls">
+                {/*<LeftButton onClick ={() => changeDay(-1)} text="Previous Day"/>*/}
+                <IconButton onClick={() => changeDay(-1)} icon={<IconPageFirst/>}/>
+                <Date>06/{day+1}/21</Date>
+                <IconButton onClick={() => changeDay(1)} icon={<IconPageLast/>}/>
             </div>
-            <Heading headingType="display-1" level={1}>{(loading || isLoading ) && "Loading..."}</Heading>
-            {(isSuccess && !isLoading) && <img src={data?.photos[index]?.img_src} alt="Error" onLoad={() => setImgLoaded(true)}/>}
-            {isError && "" + error}
+            <div id="Image-Controls">
+                <MyIconButton onClick ={() => selectPhoto(-1)} icon={<IconArrowBack style={{width: '3em', height: '3em'}}/>} text="Previous"/>
+                <LargerContent type="body-2">{(data?.photos?.length || isLoading) ? ((imgLoaded? index+1: index) ?? 0) : "None"}</LargerContent>
+                <Content style={{marginBottom: "18px"}}> {(data?.photos?.length || isLoading) ? ("\xa0/\xa0" + (data?.photos?.length ?? "...")) : ""}</Content>
+                <MyIconButton onClick ={() => selectPhoto(1)} icon={<IconArrowForward style={{width: '3em', height: '3em'}}/>} text="Next"/>
+            </div>
+            <div id="Image-View">
+                <Heading headingType="display-1" level={1}>{(loading || isLoading ) && "Loading..."}</Heading>
+                {(isSuccess && !isLoading) && <img src={data?.photos[index]?.img_src} alt="No Photos For This Day" onLoad={() => setImgLoaded(true)}/>}
+                {isError && "" + error}
+            </div>
+            <div id="Play-Pause">
+                <PrimaryButton onClick={() => setPlaying(!playing)}text={"Play/Pause"}></PrimaryButton>
+            </div>
         </div>
     );
 }
